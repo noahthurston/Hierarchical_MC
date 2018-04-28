@@ -1,9 +1,9 @@
 from matplotlib import pyplot as plt
 import pickle
 
-with open("decoded_imgs.pkl", 'rb') as f:
+with open("../data/decoded_imgs.pkl", 'rb') as f:
     decoded_imgs = pickle.load(f)
-with open("x_test_samples_by_mod.pkl", 'rb') as f:
+with open("../data/x_test_samples_by_mod.pkl", 'rb') as f:
     x_test = pickle.load(f)
 
 n = 13

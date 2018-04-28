@@ -30,11 +30,17 @@ x = Conv2D(16, (16, 2), activation='relu', padding='same', strides=1)(x)
 #encoded = Conv2D(16, (1, 1), activation='relu', padding='same', strides=1)(x)
 
 x = Dense(128, activation='relu')(x)
-encoded = Dense(64, activation='relu')(x)
+x = Dense(32, activation='relu')(x)
+x = Dense(8, activation='relu')(x)
+x = Dense(4, activation='relu')(x)
+encoded = Dense(2, activation='relu')(x)
 
 print("Encoded tensor shape: " + str(encoded.get_shape().as_list()))
 
-x = Dense(64, activation='relu')(encoded)
+x = Dense(2, activation='relu')(encoded)
+x = Dense(4, activation='relu')(x)
+x = Dense(8, activation='relu')(x)
+x = Dense(32, activation='relu')(x)
 x = Dense(128, activation='relu')(x)
 x = Conv2D(16, (16, 2), activation='relu', padding='same', strides=1)(x)
 x = Conv2D(31, (32, 1), activation='relu', padding='same')(x)
@@ -83,7 +89,7 @@ save_name = "cnn_autoencoder_" + datetime.datetime.now().strftime("%m-%d--%H-%M"
 # tensorboard --logdir=/tmp/autoencoder
 #autoencoder.fit(x_train, x_train,epochs=1,batch_size=128,shuffle=True,validation_data=(x_test, x_test),callbacks=[TensorBoard(log_dir='/tmp/autoencoder')])
 autoencoder.fit(x_train, x_train,
-                epochs=10,
+                epochs=5,
                 batch_size=128,
                 shuffle=True,
                 validation_data=(x_test, x_test),
@@ -92,9 +98,9 @@ autoencoder.fit(x_train, x_train,
 # Let's take a look at the reconstructed digits:
 decoded_imgs = autoencoder.predict(x_test_samples_by_mod)
 
-with open("decoded_imgs.pkl", 'wb') as f:
+with open("../data/decoded_imgs.pkl", 'wb') as f:
     pickle.dump(decoded_imgs, f, pickle.HIGHEST_PROTOCOL)
-with open("x_test_samples_by_mod.pkl", 'wb') as f:
+with open("../data/x_test_samples_by_mod.pkl", 'wb') as f:
     pickle.dump(x_test_samples_by_mod, f, pickle.HIGHEST_PROTOCOL)
 
 
