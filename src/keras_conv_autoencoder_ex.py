@@ -20,26 +20,55 @@ print("Imports successful")
 input_img = Input(shape=(28, 28, 1))  # adapt this if using `channels_first` image data format
 
 x = Conv2D(16, (3, 3), activation='relu', padding='same')(input_img)
+print("After conv1 tensor shape: " + str(x.get_shape().as_list()))
+
 x = MaxPooling2D((2, 2), padding='same')(x)
+print("After pooling1 tensor shape: " + str(x.get_shape().as_list()))
+
 x = Conv2D(8, (3, 3), activation='relu', padding='same')(x)
+print("After conv2 tensor shape: " + str(x.get_shape().as_list()))
+
 x = MaxPooling2D((2, 2), padding='same')(x)
+print("After pooling2 tensor shape: " + str(x.get_shape().as_list()))
+
 x = Conv2D(8, (3, 3), activation='relu', padding='same')(x)
+print("After conv3 tensor shape: " + str(x.get_shape().as_list()))
+
 encoded = MaxPooling2D((2, 2), padding='same')(x)
+print("After encoding tensor shape: " + str(encoded.get_shape().as_list()))
 
 # at this point the representation is (4, 4, 8) i.e. 128-dimensional
 
+print('\n')
+
 x = Conv2D(8, (3, 3), activation='relu', padding='same')(encoded)
+print("After conv3' tensor shape: " + str(x.get_shape().as_list()))
+
 x = UpSampling2D((2, 2))(x)
+print("After upsampling3' tensor shape: " + str(x.get_shape().as_list()))
+
 x = Conv2D(8, (3, 3), activation='relu', padding='same')(x)
+print("After conv2' tensor shape: " + str(x.get_shape().as_list()))
+
 x = UpSampling2D((2, 2))(x)
+print("After upsampling2' tensor shape: " + str(x.get_shape().as_list()))
+
 x = Conv2D(16, (3, 3), activation='relu')(x)
+print("After conv1' tensor shape: " + str(x.get_shape().as_list()))
+
 x = UpSampling2D((2, 2))(x)
+print("After upsampling1' tensor shape: " + str(x.get_shape().as_list()))
+
 decoded = Conv2D(1, (3, 3), activation='sigmoid', padding='same')(x)
+print("Decoded tensor shape: " + str(decoded.get_shape().as_list()))
 
 autoencoder = Model(input_img, decoded)
 autoencoder.compile(optimizer='adadelta', loss='binary_crossentropy')
 
 
+print(autoencoder.summary())
+
+raise SystemExit
 
 # To train it, we will use the original MNIST digits with shape (samples, 3, 28, 28),
 # and we will just normalize pixel values between 0 and 1.
@@ -54,8 +83,6 @@ x_test = np.reshape(x_test, (len(x_test), 28, 28, 1))  # adapt this if using `ch
 print("training shapes: ")
 print(x_train.shape)
 print(x_test.shape)
-
-raise SystemExit
 
 
 # tensorboard backend
