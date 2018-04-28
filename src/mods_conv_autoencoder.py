@@ -8,6 +8,7 @@ from keras import backend as K
 
 from keras.datasets import mnist
 import numpy as np
+import datetime
 
 from keras.callbacks import TensorBoard
 
@@ -22,26 +23,24 @@ import preprocessing
 
 input_img = Input(shape=(64, 2, 1))  # adapt this if using `channels_first` image data format
 
-x = Conv2D(4, (2, 2), activation='relu', padding='same', strides=1)(input_img)
-x = MaxPooling2D((2, 1), padding='same')(x)
-x = Conv2D(2, (2, 2), activation='relu', padding='same', strides=1)(x)
-x = MaxPooling2D((2, 1), padding='same')(x)
-encoded = Conv2D(16, (1, 1), activation='relu', padding='same', strides=1)(x)
+x = Conv2D(32, (32, 1), activation='relu', padding='same', strides=1)(input_img)
+#x = MaxPooling2D((2, 1), padding='same')(x)
+x = Conv2D(16, (16, 2), activation='relu', padding='same', strides=1)(x)
+#x = MaxPooling2D((2, 1), padding='same')(x)
+#encoded = Conv2D(16, (1, 1), activation='relu', padding='same', strides=1)(x)
 
-#x = Dense(16, activation='relu')(x)
-#encoded = Dense(2, activation='relu')(x)
+x = Dense(128, activation='relu')(x)
+encoded = Dense(64, activation='relu')(x)
 
-
-# want to get it down to 32d
-# at this point the representation is [None, 8, 1, 4] i.e. 32-dimensional
 print("Encoded tensor shape: " + str(encoded.get_shape().as_list()))
 
-#x = Dense(2, activation='relu')(encoded)
-x = Conv2D(16, (1, 1), activation='relu', padding='same', strides=1)(encoded)
-x = Conv2D(2, (2, 1), activation='relu', padding='same')(x)
-x = UpSampling2D((2, 1))(x)
-x = Conv2D(4, (2, 1), activation='relu', padding='same')(x)
-x = UpSampling2D((2, 1))(x)
+x = Dense(64, activation='relu')(encoded)
+x = Dense(128, activation='relu')(x)
+x = Conv2D(16, (16, 2), activation='relu', padding='same', strides=1)(x)
+x = Conv2D(31, (32, 1), activation='relu', padding='same')(x)
+#x = UpSampling2D((2, 1))(x)
+#x = Conv2D(4, (1, 1), activation='relu', padding='same')(x)
+#x = UpSampling2D((2, 1))(x)
 
 decoded = Conv2D(1, (2, 2), activation='sigmoid', padding='same')(x)
 
@@ -53,8 +52,9 @@ autoencoder.compile(optimizer='adadelta', loss='binary_crossentropy')
 
 print(autoencoder.summary())
 
-
 print("Model built")
+
+#raise SystemExit
 
 # adapt to create train/test sets
 
@@ -77,6 +77,8 @@ x_train = np.reshape(x_train, (len(x_train), 64, 2, 1))  # adapt this if using `
 x_test = np.reshape(x_test, (len(x_test), 64, 2, 1))  # adapt this if using `channels_first` image data format
 x_test_samples_by_mod = np.reshape(x_test_samples_by_mod, (len(x_test_samples_by_mod), 64, 2, 1))
 
+save_name = "cnn_autoencoder_" + datetime.datetime.now().strftime("%m-%d--%H-%M")
+
 # tensorboard backend
 # tensorboard --logdir=/tmp/autoencoder
 #autoencoder.fit(x_train, x_train,epochs=1,batch_size=128,shuffle=True,validation_data=(x_test, x_test),callbacks=[TensorBoard(log_dir='/tmp/autoencoder')])
@@ -84,7 +86,8 @@ autoencoder.fit(x_train, x_train,
                 epochs=10,
                 batch_size=128,
                 shuffle=True,
-                validation_data=(x_test, x_test))
+                validation_data=(x_test, x_test),
+                callbacks=[TensorBoard(log_dir=('../logs/' + save_name))])
 
 # Let's take a look at the reconstructed digits:
 decoded_imgs = autoencoder.predict(x_test_samples_by_mod)

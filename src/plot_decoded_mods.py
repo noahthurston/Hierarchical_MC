@@ -18,7 +18,6 @@ for i in range(n):
     #ax.get_xaxis().set_visible(False)
     #ax.get_yaxis().set_visible(False)
 
-
     # display reconstruction
     ax = plt.subplot(2, n, i + n+1)
     plt.imshow(decoded_imgs[i].reshape(64, 2))
