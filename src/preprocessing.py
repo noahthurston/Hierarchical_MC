@@ -44,14 +44,9 @@ def load_train_test_set(FILE_PATH = "../data/mod_14_clean.pkl"):
     # x_test: 15k samples
 
     min_val = np.min(all_mods_separate)
-    #print(min_val)
     all_mods_separate = all_mods_separate+np.abs(min_val)
-    #print(np.min(all_mods_separate))
-
     max_val = np.max(all_mods_separate)
-    #print(max_val)
     all_mods_separate = all_mods_separate/max_val
-    #print(np.max(all_mods_separate))
 
     all_mods_together = all_mods_separate.reshape((13*5000, 64,2))
 

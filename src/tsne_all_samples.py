@@ -8,10 +8,6 @@ import time
 from sklearn.manifold import TSNE
 import pickle
 
-from mpl_toolkits.mplot3d import Axes3D
-import matplotlib.pyplot as plt
-
-
 """
 mnist = fetch_mldata("MNIST original")
 X = mnist.data / 255.0
@@ -23,8 +19,40 @@ print(X.shape,y.shape)
 
 ### need to create X, y sets for modulation samples
 
-DF_PATH = "../data/encoded_vectors_df_04-29--01-09"
-df = pd.read_pickle(DF_PATH)
+FILE_PATH = "../data/mod_14_clean.pkl"
+f = open(FILE_PATH, "rb")
+mods, data = pickle.loads(f.read(), encoding='ISO-8859-1')
+
+# convert from dictionary to np.array
+all_mods_sorted = np.zeros((13, 5000, 64, 2))
+for mod_index in range(13):
+        all_mods_sorted[mod_index] = data[mods[mod_index]]
+
+# normalize data to be between 0 and 1
+min_val = np.min(all_mods_sorted)
+all_mods_sorted = all_mods_sorted + np.abs(min_val)
+max_val = np.max(all_mods_sorted)
+all_mods_sorted = all_mods_sorted / max_val
+
+# flatten array of 64x2 images
+X = all_mods_sorted.reshape((13*5000, 64*2))
+
+# create an array of the modulation label
+y = np.array([])
+for mod in range(13):
+    curr_mod = np.zeros(5000)
+    curr_mod.fill(mod)
+    y = np.append(y, curr_mod)
+
+
+feat_cols = ['pixel'+str(i) for i in range(X.shape[1])]
+
+
+df = pd.DataFrame(X, columns=feat_cols)
+df['label'] = y
+df['label'] = df['label'].apply(lambda i: str(i))
+
+X, y = None, None
 
 print("Size of the dataframe: {}".format(df.shape))
 
@@ -61,10 +89,6 @@ chart = ggplot( df.loc[rndperm[:3000],:], aes(x='pca-one', y='pca-two', color='l
 
 #### BEGIN TSNE
 
-feat_cols = df.columns.values[:-1]
-
-### 2D t-SNE
-"""
 n_sne = 10000
 time_start = time.time()
 tsne = TSNE(n_components=2, verbose=1, perplexity=40, n_iter=300)
@@ -80,46 +104,6 @@ chart = ggplot( df_tsne, aes(x='x-tsne', y='y-tsne', color='label') ) \
         + geom_point(size=70,alpha=0.1) \
         + ggtitle("tSNE dimensions colored by digit")
 print(chart)
-"""
-
-
-### 3d t-SNE
-n_sne = 100
-time_start = time.time()
-tsne = TSNE(n_components=3, verbose=1, perplexity=40, n_iter=300)
-tsne_results = tsne.fit_transform(df.loc[rndperm[:n_sne],feat_cols].values)
-
-print('t-SNE done! Time elapsed: {} seconds'.format(time.time()-time_start))
-
-
-df_tsne = df.loc[rndperm[:n_sne],:].copy()
-df_tsne['x'] = tsne_results[:,0]
-df_tsne['y'] = tsne_results[:,1]
-df_tsne['z'] = tsne_results[:,2]
-
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-
-groups = df_tsne.groupby('label')
-
-#fig, ax = plt.subplots(111, projection='3d')
-
-for name, group in groups:
-        ax.plot(group.x, group.y, group.z, alpha=0.3, marker='o', ms=6, linestyle='None', label=name)
-
-ax.legend()
-
-#ax.scatter(x,y,z,c='r',marker='o')
-
-plt.show()
-
-"""
-chart = ggplot( df_tsne, aes(x='x-tsne', y='y-tsne', z='z-tsne', color='label') ) \
-        + geom_point(size=70,alpha=0.1) \
-        + ggtitle("tSNE dimensions colored by digit")
-print(chart)
-"""
-
 
 
 

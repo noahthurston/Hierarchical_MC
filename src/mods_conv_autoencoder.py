@@ -1,7 +1,6 @@
 # keras convolutional autoencoder for MNIST
 # Based on: https://blog.keras.io/building-autoencoders-in-keras.html
 
-# first imports
 from keras.layers import Input, Dense, Conv2D, MaxPooling2D, UpSampling2D
 from keras.models import Model
 from keras import regularizers
@@ -63,7 +62,7 @@ x_test_samples_by_mod = np.reshape(x_test_samples_by_mod, (len(x_test_samples_by
 save_name = "cnn_autoencoder_" + datetime.datetime.now().strftime("%m-%d--%H-%M")
 
 autoencoder.fit(x_train, x_train,
-                epochs=100,
+                epochs=25,
                 batch_size=128,
                 shuffle=True,
                 validation_data=(x_test, x_test),
@@ -77,7 +76,16 @@ print("saving to: " + save_path)
 autoencoder.save(save_path)
 
 
+encoder_model = Model(input_img, encoded)
+encoder_model.compile(optimizer='adam', loss='mean_squared_error')
+save_name = "cnn_encoder_" + datetime.datetime.now().strftime("%m-%d--%H-%M")
+save_path = "../data/" + save_name + ".h5"
+print("saving to: " + save_path)
+encoder_model.save(save_path)
+
+
 with open("../data/decoded_mods.pkl", 'wb') as f:
     pickle.dump(decoded_mods, f, pickle.HIGHEST_PROTOCOL)
 with open("../data/x_test_samples_by_mod.pkl", 'wb') as f:
     pickle.dump(x_test_samples_by_mod, f, pickle.HIGHEST_PROTOCOL)
+
