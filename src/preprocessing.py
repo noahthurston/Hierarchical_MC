@@ -38,16 +38,27 @@ def load_train_test_set(FILE_PATH = "../data/mod_14_clean.pkl"):
     for mod_index in range(13):
         all_mods_separate[mod_index] = data[mods[mod_index]]
 
-    # print(all_mods_separate)
-
-        all_mods_together = all_mods_separate.reshape((13*5000, 64,2))
 
     # total 13*5k=65k samples
     # x_train: 50k samples
     # x_test: 15k samples
 
-    x_train = (all_mods_together[0:50000]+1)/2
-    x_test = (all_mods_together[50000:65000]+1)/2
+    min_val = np.min(all_mods_separate)
+    #print(min_val)
+    all_mods_separate = all_mods_separate+np.abs(min_val)
+    #print(np.min(all_mods_separate))
+
+    max_val = np.max(all_mods_separate)
+    #print(max_val)
+    all_mods_separate = all_mods_separate/max_val
+    #print(np.max(all_mods_separate))
+
+    all_mods_together = all_mods_separate.reshape((13*5000, 64,2))
+
+
+    x_train = all_mods_together[0:50000]
+    x_test = all_mods_together[50000:65000]
+
 
     #### TO DO: should normalize data to be [0,1]
 
@@ -59,7 +70,7 @@ def load_train_test_set(FILE_PATH = "../data/mod_14_clean.pkl"):
     #raise SystemExit
     return x_train, x_test, x_test_samples_by_mod
 
-
+"""
 x_train, x_test, x_test_samples_by_mod  = load_train_test_set()
 
 print(len(x_train))
@@ -68,3 +79,4 @@ print(len(x_test))
 print(x_test_samples_by_mod)
 
 print("done")
+"""

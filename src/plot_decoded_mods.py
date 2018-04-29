@@ -1,10 +1,15 @@
 from matplotlib import pyplot as plt
 import pickle
 
-with open("../data/decoded_imgs.pkl", 'rb') as f:
+with open("../data/decoded_mods.pkl", 'rb') as f:
     decoded_imgs = pickle.load(f)
 with open("../data/x_test_samples_by_mod.pkl", 'rb') as f:
     x_test = pickle.load(f)
+
+FILE_PATH = "../data/mod_14_clean.pkl"
+f = open(FILE_PATH, "rb")
+mods, data = pickle.loads(f.read(), encoding='ISO-8859-1')
+print(mods)
 
 n = 13
 plt.figure(figsize=(20, 4))
@@ -12,6 +17,7 @@ for i in range(n):
     # display original
     ax = plt.subplot(2, n, i+1)
     plt.imshow(x_test[i].reshape(64, 2))
+    plt.title(mods[i], fontsize=9)
     plt.gray()
     plt.colorbar()
     #plt.show()

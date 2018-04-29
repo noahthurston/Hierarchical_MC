@@ -10,11 +10,12 @@ import keras
 import pickle
 from keras.models import Sequential
 from keras.layers.core import Dense, Dropout, Flatten, Activation
-from keras.layers.convolutional import Conv1D, MaxPooling1D
-from keras.models import load_model
+from keras.layers.convolutional import Conv1D, MaxPooling1D, Conv2D, MaxPooling2D
+from keras.models import load_model, Model
 from sklearn.model_selection import train_test_split
 #from classify.mc_dataset import load_data # necessary to gen aribtrary data
 
+from keras.layers import Input
 from keras.callbacks import TensorBoard
 import datetime
 
@@ -50,6 +51,7 @@ def train():
 
     # %% Make the model
 
+    """
     in_shp = list(x_train.shape[1:])
     model = Sequential()
     model.add(Conv1D(filters=128,
@@ -81,13 +83,57 @@ def train():
     model.compile(loss=keras.losses.categorical_crossentropy,
                   optimizer=keras.optimizers.Adam(),
                   metrics=['accuracy'])
+    """
 
+    # begin build
+    input_img = Input(shape=(64, 2, 1))  # adapt this if using `channels_first` image data format
+    #input_img = list(x_train.shape[1:])
 
-    print(model.summary())
+    x = Conv2D(128, (32, 1), activation='relu', padding='same', strides=1)(input_img)
+    x = MaxPooling2D((2, 1), padding='same')(x)
+    x = Conv2D(64, (16, 2), activation='relu', padding='same', strides=1)(x)
+    x = MaxPooling2D((2, 1), padding='same')(x)
+    x = Conv2D(32, (16, 2), activation='relu', padding='same', strides=1)(x)
+    x = MaxPooling2D((2, 1), padding='same')(x)
+    # x = MaxPooling2D((2, 1), padding='same')(x)
+    # encoded = Conv2D(16, (1, 1), activation='relu', padding='same', strides=1)(x)
+
+    x = Dense(128, activation='relu', kernel_initializer='glorot_uniform')(x)
+    x = Dense(64, activation='relu', kernel_initializer='glorot_uniform')(x)
+    x = Dense(32, activation='relu', kernel_initializer='he_normal')(x)
+
+    x = Dense(13, kernel_initializer='he_normal', name="dense2", activation='softmax')(x)
+
+    classifier = Model(input_img, x)
+    classifier.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+
+    print(classifier.summary())
+
+    """
+    x = Dense(2, activation='relu')(encoded)
+    x = Dense(4, activation='relu')(x)
+    x = Dense(8, activation='relu')(x)
+    x = Dense(32, activation='relu')(x)
+    x = Dense(128, activation='relu')(x)
+    x = UpSampling2D((2, 1))(x)
+    x = Conv2D(32, (16, 2), activation='relu', padding='same', strides=1)(x)
+    x = UpSampling2D((2, 1))(x)
+    x = Conv2D(32, (16, 2), activation='relu', padding='same', strides=1)(x)
+    x = UpSampling2D((2, 1))(x)
+    x = Conv2D(64, (32, 1), activation='relu', padding='same')(x)
+
+    # x = Conv2D(4, (1, 1), activation='relu', padding='same')(x)
+    # x = UpSampling2D((2, 1))(x)
+
+    decoded = Conv2D(1, (2, 2), activation='sigmoid', padding='same')(x)
+    # end build
+    """
+
+    print(classifier.summary())
 
     save_name = "cnn_classifier_" + datetime.datetime.now().strftime("%m-%d--%H-%M")
 
-    model.fit(x_train, y_train,
+    classifier.fit(x_train, y_train,
               batch_size=BATCH_SIZE,
               epochs=EPOCHS,
               verbose=1,
@@ -97,7 +143,7 @@ def train():
 
     save_path = "../data/" + save_name + ".h5"
     print("saving to: " + save_path)
-    model.save(save_path)
+    classifier.save(save_path)
 
     # TODO: It would be nice to pickle up the model here just in case
 
