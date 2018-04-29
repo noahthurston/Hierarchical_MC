@@ -65,6 +65,20 @@ def load_train_test_set(FILE_PATH = "../data/mod_14_clean.pkl"):
     #raise SystemExit
     return x_train, x_test, x_test_samples_by_mod
 
+
+def view_data_set(FILE_PATH = "../data/mod_14_clean.pkl"):
+    print("Loading data")
+    # returns x_train, x_test in shape (60000, 64, 2, 1)
+
+    f = open(FILE_PATH, "rb")
+    mods, data = pickle.loads(f.read(), encoding='ISO-8859-1')
+
+    print("loaded")
+
+
+
+view_data_set()
+
 """
 x_train, x_test, x_test_samples_by_mod  = load_train_test_set()
 

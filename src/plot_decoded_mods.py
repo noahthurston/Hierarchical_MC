@@ -16,7 +16,7 @@ plt.figure(figsize=(20, 4))
 for i in range(n):
     # display original
     ax = plt.subplot(2, n, i+1)
-    plt.imshow(x_test[i].reshape(64, 2))
+    plt.imshow(x_test[i].reshape(64, 2), clim=(0.0, 1.0))
     plt.title(mods[i], fontsize=9)
     plt.gray()
     plt.colorbar()
@@ -26,7 +26,7 @@ for i in range(n):
 
     # display reconstruction
     ax = plt.subplot(2, n, i + n+1)
-    plt.imshow(decoded_imgs[i].reshape(64, 2))
+    plt.imshow(decoded_imgs[i].reshape(64, 2), clim=(0.0, 1.0))
     plt.gray()
     plt.colorbar()
     #ax.get_xaxis().set_visible(False)

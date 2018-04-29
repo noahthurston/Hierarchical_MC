@@ -40,7 +40,7 @@ unencoded_samples = all_unencoded_samples[:SAMP_SIZE]
 
 
 # load encoder
-ENCODER_FILE_PATH='../data/cnn_encoder_04-29--00-45.h5'
+ENCODER_FILE_PATH='../data/cnn_encoder_04-29--02-09.h5'
 encoder = load_model(ENCODER_FILE_PATH)
 
 #encoder.compile(optimizer='adam', loss='mean_squared_error')
