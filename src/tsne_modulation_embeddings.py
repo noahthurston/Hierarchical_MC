@@ -133,5 +133,5 @@ def plot_tsne_3d(DF_TSNE_FILENAME):
 """
 
 
-#tsne_embedded_modulation_samples(DF_PATH = "../data/encoded_vectors_df_04-29--02-11")
+#tsne_embedded_modulation_samples(DF_PATH = "../data/encoded_vectors_df_04-29--02-11.pkl")
 plot_tsne_3d("../data/tsne_df_04-29--10-46.pkl")
