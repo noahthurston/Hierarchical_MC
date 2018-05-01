@@ -1,9 +1,9 @@
 from matplotlib import pyplot as plt
 import pickle
 
-with open("../data/decoded_mods.pkl", 'rb') as f:
+with open("../data/decoded_mods_04-30--22-59.pkl", 'rb') as f:
     decoded_imgs = pickle.load(f)
-with open("../data/x_test_samples_by_mod.pkl", 'rb') as f:
+with open("../data/x_test_samples_by_mod_04-30--22-59.pkl", 'rb') as f:
     x_test = pickle.load(f)
 
 FILE_PATH = "../data/mod_14_clean.pkl"

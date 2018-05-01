@@ -17,6 +17,8 @@ import pandas as pd
 ### need to create X, y sets for modulation samples
 
 FILE_PATH = "../data/mod_14_clean.pkl"
+ENCODED_VECTOR_LENGTH = 128
+
 f = open(FILE_PATH, "rb")
 mods, data = pickle.loads(f.read(), encoding='ISO-8859-1')
 
@@ -40,13 +42,13 @@ unencoded_samples = all_unencoded_samples[:SAMP_SIZE]
 
 
 # load encoder
-ENCODER_FILE_PATH='../data/cnn_encoder_04-29--02-09.h5'
+ENCODER_FILE_PATH='../models/cnn_encoder_04-30--22-59.h5'
 encoder = load_model(ENCODER_FILE_PATH)
 
 #encoder.compile(optimizer='adam', loss='mean_squared_error')
 encoded_samples = encoder.predict(unencoded_samples)
 
-encoded_samples = encoded_samples.reshape(SAMP_SIZE, 32)
+encoded_samples = encoded_samples.reshape(SAMP_SIZE, ENCODED_VECTOR_LENGTH)
 
 
 
@@ -69,6 +71,6 @@ print("Size of the dataframe: {}".format(df.shape))
 
 rndperm = np.random.permutation(df.shape[0])
 
-DF_PATH = '../data/encoded_vectors_df_' + datetime.datetime.now().strftime("%m-%d--%H-%M")
+DF_PATH = '../data/encoded_128vectors_df_' + datetime.datetime.now().strftime("%m-%d--%H-%M") + ".pkl"
 print("saving dataframe to: " + DF_PATH)
 df.to_pickle(DF_PATH)

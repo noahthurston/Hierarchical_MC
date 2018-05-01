@@ -12,16 +12,10 @@ def kmeans_embedded_modulation_samples(DF_PATH):
 
     # sort dataframe to only cluster certan modulations
     all_mods = ['0.0', '1.0', '2.0', '3.0', '4.0', '5.0', '6.0', '7.0', '8.0', '9.0', '10.0', '11.0', '12.0']
-    included_mods = ['0.0', '2.0', '4.0', '5.0', '6.0', '7.0', '8.0', '9.0', '10.0', '11.0']
-    num_mods = len(included_mods)
+    included_mods = ['2.0', '5.0', '7.0', '8.0', '9.0', '10.0', '11.0']
+    num_mods = len(all_mods)
 
-    mask = df['label'].isin(included_mods)
-
-    pick1 = (df['label'] == '0.0')
-    pick2 = (df['label'] == '1.0')
-    pick3 = (df['label'] == '3.0')
-    #df_sorted.replace([np.inf, -np.inf], np.nan).dropna(how='all')
-
+    mask = df['label'].isin(all_mods)
 
     df_sorted = df[mask].reset_index(drop=True)
 
@@ -29,7 +23,7 @@ def kmeans_embedded_modulation_samples(DF_PATH):
     feat_cols = df_sorted.columns.values[:-1]
 
     n_kmeans = 10000
-    n_clusters = 3
+    n_clusters = 4
 
     rndperm = np.random.permutation(df_sorted.shape[0])
 
@@ -51,8 +45,8 @@ def kmeans_embedded_modulation_samples(DF_PATH):
     clusters.astype(np.int)
 
     bin_counts = np.zeros((13))
-    bin_counts_tmp = np.append(np.bincount(mods), np.zeros(1))
-    for x in range(len(bin_counts_tmp)): bin_counts[x] = bin_counts_tmp[x]
+    bin_counts_tmp = np.bincount(mods)
+    for index, count in enumerate(bin_counts_tmp): bin_counts[index] = count
 
 
     print(mods)
@@ -77,4 +71,4 @@ def kmeans_embedded_modulation_samples(DF_PATH):
     print(percent_composition_matrix)
 
 
-kmeans_embedded_modulation_samples(DF_PATH = "../data/encoded_vectors_df_04-29--02-11.pkl")
+kmeans_embedded_modulation_samples(DF_PATH = "../data/encoded_128vectors_df_04-30--23-06.pkl")
