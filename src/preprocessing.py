@@ -1,6 +1,8 @@
 import numpy as np
 import pickle
 from matplotlib import pyplot as plt
+import pandas as pd
+from sklearn.preprocessing import MinMaxScaler, RobustScaler, QuantileTransformer
 
 
 """
@@ -25,45 +27,48 @@ mods (13 in total):
             -2 array length
 """
 
-def load_train_test_set(FILE_PATH = "../data/mod_14_clean.pkl"):
+def load_train_test_set(DF_LOAD_PATH, n_samples=10*1000):
     print("Loading data")
     # returns x_train, x_test in shape (60000, 64, 2, 1)
 
-    f = open(FILE_PATH, "rb")
-    mods, data = pickle.loads(f.read(), encoding='ISO-8859-1')
+    ### new stuff
 
-    all_mods_separate = np.zeros((13,5000,64,2))
-    # print(all_mods_separate)
+    df = pd.read_pickle(DF_LOAD_PATH)
 
-    for mod_index in range(13):
-        all_mods_separate[mod_index] = data[mods[mod_index]]
+    print("Dataframe shape:" + str(df.shape))
 
+    df_sample = df.sample(n=n_samples).copy()
+    df_sample.reset_index(drop=True)
+    df_sample.reindex()
 
-    # total 13*5k=65k samples
-    # x_train: 50k samples
-    # x_test: 15k samples
+    data_as_array = df_sample.values
 
-    min_val = np.min(all_mods_separate)
-    all_mods_separate = all_mods_separate+np.abs(min_val)
-    max_val = np.max(all_mods_separate)
-    all_mods_separate = all_mods_separate/max_val
+    QTscaler = QuantileTransformer()
+    MMscaler = MinMaxScaler()
 
-    all_mods_together = all_mods_separate.reshape((13*5000, 64,2))
+    MMscaler.fit(data_as_array[:, :256])
+    data_as_array[:, :256] = MMscaler.transform(data_as_array[:, :256])
 
+    QTscaler.fit(data_as_array[:, :256])
+    data_as_array[:, :256] = QTscaler.transform(data_as_array[:, :256])
 
-    x_train = all_mods_together[0:50000]
-    x_test = all_mods_together[50000:65000]
+    split_index = int(len(data_as_array)*0.9)
 
+    # 90:10 train:test split
+    x_train = data_as_array[0:split_index, :]
+    x_test = data_as_array[split_index:, :]
 
-    #### TO DO: should normalize data to be [0,1]
+    print("Number of training samples: " + str(len(x_train)))
+    print("Number of test samples: " + str(len(x_test)))
 
-    x_test_samples_by_mod = np.zeros((13,64,2))
-    random_sample_indexes = np.random.random_integers(0,5000,13)
-    for index in range(13):
-        x_test_samples_by_mod[index] = all_mods_separate[index][random_sample_indexes[index]]
+    # create verification set that contains one of each mod
+    x_verification = np.empty(shape=[26, 260], dtype='O')
+    for mod_index in range(len(x_verification)):
+        x_verification[mod_index] = x_test[x_test[:, 257] == mod_index][0]
 
-    #raise SystemExit
-    return x_train, x_test, x_test_samples_by_mod
+    print("debug")
+
+    return x_train, x_test, x_verification
 
 
 def view_data_set(FILE_PATH = "../data/mod_14_clean.pkl"):
@@ -77,7 +82,7 @@ def view_data_set(FILE_PATH = "../data/mod_14_clean.pkl"):
 
 
 
-view_data_set()
+# load_train_test_set(DF_LOAD_PATH = "../data/mod_26_rsf")
 
 """
 x_train, x_test, x_test_samples_by_mod  = load_train_test_set()
