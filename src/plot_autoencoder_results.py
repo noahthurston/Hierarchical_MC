@@ -2,20 +2,20 @@ from matplotlib import pyplot as plt
 import pickle
 import datetime
 
-with open("../data/verification_set_05-06--10-44.pkl", 'rb') as f:
+with open("../data/verification_set_05-14--23-51.pkl", 'rb') as f:
     verification_set = pickle.load(f)
 
 x_in = verification_set[0]
 x_out = verification_set[1]
 x_labels = verification_set[2]
 
-n = 26
+n = 29
 plt.figure(figsize=(20, 4))
 for i in range(n):
     # display original
     ax = plt.subplot(2, n, i+1)
     plt.imshow(x_in[i].reshape(16, 16), clim=(0.0, 1.0))
-    plt.title(x_labels[i][-4], fontsize=9)
+    plt.title(x_labels[i][-2], fontsize=9)
     plt.gray()
     plt.colorbar()
     #plt.show()

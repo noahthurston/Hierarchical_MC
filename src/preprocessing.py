@@ -5,27 +5,38 @@ import pandas as pd
 from sklearn.preprocessing import MinMaxScaler, RobustScaler, QuantileTransformer
 
 
-"""
-mods (13 in total):
-0: ook
-1: bpsk
-2: qpsk
-3: 4ask
-4: 4pam
-5: 8psk
-6: 8pam
-7: 8qam_cross
-8: 8qam_circular
-9: 16qam
-10: 16psk
-11: 32qam_cross
-12: 32qam_rect64qam
+mod_dictionary = {
+    '8qam_circular' : 0,
+    'am-dsb' : 1,
+    '8cpfsk' : 2,
+    'lfm_squarewave' : 3,
+    '8pam' : 4,
+    'ofdm-64-bpsk' : 5,
+    'lfm_sawtooth' : 6,
+    '8gfsk': 7,
+    '16qam': 8,
+    'ofdm-16-bpsk': 9,
+    '32qam_rect': 10,
+    '4ask': 11,
+    '16psk': 12,
+    'am-ssb': 13,
+    '2gfsk': 14,
+    'ofdm-32-bpsk': 15,
+    '2cpfsk' : 16,
+    '4cpfsk' : 17,
+    '64qam': 18,
+    '4pam': 19,
+    'ofdm-64-qpsk': 20,
+    '4gfsk': 21,
+    'ook': 22,
+    '32qam_cross': 23,
+    '8qam_cross': 24,
+    'ofdm-32-qpsk': 25,
+    'ofdm-16-qpsk': 26,
+    'wbfm': 27,
+    'bpsk': 28
+}
 
--modulation
-    -5k length array
-        -64 array length
-            -2 array length
-"""
 
 def load_train_test_set(DF_LOAD_PATH, n_samples=10*1000):
     print("Loading data")
@@ -61,12 +72,19 @@ def load_train_test_set(DF_LOAD_PATH, n_samples=10*1000):
     print("Number of training samples: " + str(len(x_train)))
     print("Number of test samples: " + str(len(x_test)))
 
-    # create verification set that contains one of each mod
-    x_verification = np.empty(shape=[26, 260], dtype='O')
-    for mod_index in range(len(x_verification)):
-        x_verification[mod_index] = x_test[x_test[:, 257] == mod_index][0]
 
-    print("debug")
+
+    # create verification set that contains one of each mod
+    x_verification = np.empty(shape=[29, 258], dtype='O')
+    for mod_index in range(len(x_verification)):
+        test_index = 0
+        for x in range(len(x_test)):
+            if mod_dictionary[x_test[x,256]] == mod_index:
+                test_index = x
+                break
+
+        x_verification[mod_index] = x_test[test_index,:]
+
 
     return x_train, x_test, x_verification
 

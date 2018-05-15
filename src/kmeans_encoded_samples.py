@@ -11,12 +11,13 @@ def kmeans_encoded_samples(DF_PATH):
     all_mod_labels = [
     '8qam_circular',
     'am-dsb',
+    '8cpfsk',
     'lfm_squarewave',
     '8pam',
     'ofdm-64-bpsk',
     'lfm_sawtooth',
     '8gfsk',
-    '16qam'
+    '16qam',
     'ofdm-16-bpsk',
     '32qam_rect',
     '4ask',
@@ -24,6 +25,8 @@ def kmeans_encoded_samples(DF_PATH):
     'am-ssb',
     '2gfsk',
     'ofdm-32-bpsk',
+    '2cpfsk',
+    '4cpfsk',
     '64qam',
     '4pam',
     'ofdm-64-qpsk',
@@ -34,29 +37,32 @@ def kmeans_encoded_samples(DF_PATH):
     'ofdm-32-qpsk',
     'ofdm-16-qpsk',
     'wbfm',
-    'bpsk',
+    'bpsk'
     ]
 
     included_mod_labels = [
-    '8qam_circular',
-    'ofdm-64-bpsk',
-    '8gfsk',
-    '16qam'
-    '32qam_rect',
-    '4ask',
-    '16psk',
-    '64qam',
-    'ofdm-64-qpsk',
-    '4gfsk',
-    '32qam_cross',
-    '8qam_cross',
-    'bpsk'
+    'am-dsb',
+    '8cpfsk',
+    'lfm_squarewave',
+    '8pam',
+    'lfm_sawtooth',
+    'ofdm-16-bpsk',
+    'am-ssb',
+    '2gfsk',
+    'ofdm-32-bpsk',
+    '2cpfsk',
+    '4cpfsk',
+    '4pam',
+    'ook',
+    'ofdm-32-qpsk',
+    'ofdm-16-qpsk',
+    'wbfm',
     ]
 
     # macro variables
     N_KMEANS_SAMPLES = 100*1000
     N_CLUSTERS = 2
-    N_MODS = 26
+    N_MODS = 29
 
     num_mods = len(included_mod_labels)
 
@@ -79,8 +85,9 @@ def kmeans_encoded_samples(DF_PATH):
     cluster_results = km.labels_
     df_kmeans['cluster'] = cluster_results
 
-    mods_of_samples = np.array(df_kmeans.loc[:, 'mod_index'])
-    mods_of_samples = mods_of_samples.astype(np.float).astype(np.int)
+    mods_of_samples = np.array(df_kmeans.loc[:, 'mod_name'])
+    #mods_of_samples = mods_of_samples.astype(np.float).astype(np.int)
+    mods_of_samples = [mod_dictionary[x] for x in mods_of_samples]
 
     clusters_of_samples = np.array(df_kmeans.loc[:, 'cluster'])
     clusters_of_samples.astype(np.int)
@@ -122,35 +129,38 @@ def create_hierarchical_df(mod_hierarchy_dict, DF_LOAD_PATH, DF_SAVE_PATH):
 
     df.to_pickle(DF_SAVE_PATH)
 
-
 mod_dictionary = {
     '8qam_circular' : 0,
     'am-dsb' : 1,
-    'lfm_squarewave' : 2,
-    '8pam' : 3,
-    'ofdm-64-bpsk' : 4,
-    'lfm_sawtooth' : 5,
-    '8gfsk': 6,
-    '16qam': 7,
-    'ofdm-16-bpsk': 8,
-    '32qam_rect': 9,
-    '4ask': 10,
-    '16psk': 11,
-    'am-ssb': 12,
-    '2gfsk': 13,
-    'ofdm-32-bpsk': 14,
-    '64qam': 15,
-    '4pam': 16,
-    'ofdm-64-qpsk': 17,
-    '4gfsk': 18,
-    'ook': 19,
-    '32qam_cross': 20,
-    '8qam_cross': 21,
-    'ofdm-32-qpsk': 22,
-    'ofdm-16-qpsk': 23,
-    'wbfm': 24,
-    'bpsk': 25
+    '8cpfsk' : 2,
+    'lfm_squarewave' : 3,
+    '8pam' : 4,
+    'ofdm-64-bpsk' : 5,
+    'lfm_sawtooth' : 6,
+    '8gfsk': 7,
+    '16qam': 8,
+    'ofdm-16-bpsk': 9,
+    '32qam_rect': 10,
+    '4ask': 11,
+    '16psk': 12,
+    'am-ssb': 13,
+    '2gfsk': 14,
+    'ofdm-32-bpsk': 15,
+    '2cpfsk' : 16,
+    '4cpfsk' : 17,
+    '64qam': 18,
+    '4pam': 19,
+    'ofdm-64-qpsk': 20,
+    '4gfsk': 21,
+    'ook': 22,
+    '32qam_cross': 23,
+    '8qam_cross': 24,
+    'ofdm-32-qpsk': 25,
+    'ofdm-16-qpsk': 26,
+    'wbfm': 27,
+    'bpsk': 28
 }
+
 # first heirarchy
 #[[0 1 1 1 0 1 0 0 1 0 0 0 1 1 1 0 1 0 0 1 0 0 1 1 1 0]
 # [1 0 0 0 1 0 1 1 0 1 1 1 0 0 0 1 0 1 1 0 1 1 0 0 0 1]]
@@ -215,5 +225,50 @@ mod_hierarchy_dict = {
 }
 
 
-create_hierarchical_df(mod_hierarchy_dict, DF_LOAD_PATH="../data/mod_26_rsf", DF_SAVE_PATH="../data/mod_26_rsf_with_hier.pkl")
-#kmeans_encoded_samples(DF_PATH = "../data/encoded_128vectors_df_05-06--12-43.pkl")
+#create_hierarchical_df(mod_hierarchy_dict, DF_LOAD_PATH="../data/mod_29_rsf", DF_SAVE_PATH="../data/encoded_128vectors_df_05-14--23-59.pkl")
+kmeans_encoded_samples(DF_PATH="../data/encoded_128vectors_df_05-14--23-59.pkl")
+
+
+"""
+cluster 0
+    cluster 00
+        '8qam_circular',
+        '8gfsk',
+        '16qam',
+        '32qam_rect',
+        '4ask',
+        '16psk',
+        '64qam',
+        '4gfsk',
+        '32qam_cross',
+        '8qam_cross',
+        'bpsk'
+    
+    cluster 01
+        'ofdm-64-qpsk',
+        'ofdm-64-bpsk',
+    
+    
+cluster 1
+    cluster 10
+        'am-dsb',
+        '8cpfsk',
+        'lfm_squarewave',
+        '8pam',
+        'lfm_sawtooth',
+        'ofdm-16-bpsk',
+        'am-ssb',
+        '2gfsk',
+        '2cpfsk',
+        '4cpfsk',
+        '4pam',
+        'ook',
+        'ofdm-16-qpsk',
+        'wbfm',
+
+    cluster 11
+        'ofdm-32-bpsk',
+        'ofdm-32-qpsk',
+    
+
+"""
